@@ -3,18 +3,14 @@ package task;
 public abstract class AbstractTask {
 
     protected int id;
-
     protected String name;
-
     protected Status status;
+    protected String description;
 
-    protected String descriptions;
-
-    public AbstractTask(int id, String name, Status status, String descriptions) {
-        this.id = id;
+    public AbstractTask(String name, Status status, String descriptions) {
         this.name = name;
         this.status = status;
-        this.descriptions = descriptions;
+        this.description = descriptions;
     }
 //--------------------------------------------------------------------
     public int getId() {
@@ -29,8 +25,8 @@ public abstract class AbstractTask {
         return status;
     }
 
-    public String getDescriptions() {
-        return descriptions;
+    public String getDescription() {
+        return description;
     }
 //------------------------------------------------------------------
     public void setId(int id) {
@@ -45,7 +41,17 @@ public abstract class AbstractTask {
         this.status = status;
     }
 
-    public void setDescriptions(String descriptions) {
-        this.descriptions = descriptions;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    //----------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return  "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", descriptions='" + description + '\'' +
+                '}';
     }
 }
