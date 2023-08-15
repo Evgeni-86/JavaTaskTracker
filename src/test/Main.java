@@ -5,89 +5,59 @@ import task.*;
 
 
 public class Main {
-    public static void main(String[] args) {
-        Manager manager = new Manager();
 
-        int inputGeneralMenu = Menu.generalMenu();
+    static Manager manager;
+
+    public static void main(String[] args) {
+
+        Task newTask1 = new Task()
+
+
+
+        manager = new Manager();
+        int inputGeneralMenu = Service.generalMenu();
+
         while (inputGeneralMenu != 0) {
+
             switch (inputGeneralMenu) {
                 case 1:
-                    Task newTask = Menu.addTaskMenu();
-                    manager.addTask(newTask);
+                    Task newTask  = Service.createAnyTask(Task.class, null);
+                    if (newTask != null){
+                        manager.addTask(newTask);
+                    }
                     System.out.println(manager.getAllTaskHashMap());
                     break;
                 case 2:
-                    Epic newEpic = Menu.addEpicMenu();
-                    manager.addEpic(newEpic);
+                    Epic newEpic = Service.createAnyTask(Epic.class, null);
+                    if (newEpic != null){
+                        manager.addEpic(newEpic);
+                    }
                     System.out.println(manager.getAllEpicHashMap());
                     break;
                 case 3://РЕДАТИРОВАТЬ ЗАДАЧУ TASK
-                    System.out.println(manager.getAllTaskHashMap());
-                    System.out.println("Введите id задачи Task");
-                    int idTask = Service.SC_int.nextInt();
-                    Task currentTask = manager.getTaskById(idTask);
+                    AbstractTask currentTask = choiceTask("task", null);
                     System.out.println(currentTask);
-                    int input = options(currentTask);
-                    switch (input) {
-                        case 1:
-                            Menu.editTask(currentTask);
-                            manager.updateTask(currentTask);
-                            break;
-                        case 4:
-                            currentTask.setStatus(Status.DONE);
-                            break;
-                        case 5:
-                            manager.removeTask(currentTask);
-                            break;
-                    }
+                    int choice = Service.options(currentTask);
+                    taskFunctions(choice, currentTask);
                     break;
                 case 4: //РЕДАКТИРОВАТЬ ЗАДАЧУ EPIC
-                    System.out.println(manager.getAllEpicHashMap());
-                    System.out.println("Введите id задачи Task");
-                    int idEpic = Service.SC_int.nextInt();
-                    Epic currentEpic = manager.getEpicById(idEpic);
+                    AbstractTask currentEpic = choiceTask("epic", null);
                     System.out.println(currentEpic);
-                    int inputEpic = options(currentEpic);
-                    switch (inputEpic) {
-                        case 1:
-                            Menu.editTask(currentEpic);
-                            manager.updateEpic(currentEpic);
-                            break;
-                        case 2:
-                            SubTask newSubTask = Menu.addSubTaskMenu(currentEpic);
+                    int choice2 = Service.options(currentEpic);
+
+                    if (choice2 == 11) {
+                        SubTask newSubTask = Service.createAnyTask(SubTask.class, (Epic) currentEpic);
+                        if (newSubTask != null){
                             manager.addSubTask(newSubTask);
-                            break;
-                        case 3://РЕДАКТИРОВАТЬ SUBTASK
-                            System.out.println(currentEpic.getEpicSubTaskList());
-                            System.out.println("Введите Id SubTask");
-                            int idSubTask = Service.SC_int.nextInt();
-                            SubTask currentSubTask = manager.getSubTaskById(idSubTask);
-                            int inputSubTask = options(currentSubTask);
-                            switch (inputSubTask) {
-                                case 1:
-                                    Menu.editTask(manager.getSubTaskById(idSubTask));
-                                    break;
-                                case 4:
-                                    currentSubTask.setStatus(Status.DONE);
-                                    manager.updateSubTask(currentSubTask);
-                                    break;
-                                case 5:
-                                    manager.removeSubTask(currentSubTask);
-                                    manager.updateSubTask(currentSubTask);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            break;
-                        case 4:
-                            currentEpic.setStatus(Status.DONE);
-                            break;
-                        case 5:
-                            manager.removeEpic(currentEpic);
-                            break;
-                        default:
-                            break;
+                        }
+                    } else if (choice2 == 12) {
+                        AbstractTask currentSubTask = choiceTask("subtask", (Epic) currentEpic);
+                        int choice3 = Service.options(currentSubTask);
+                        taskFunctions(choice3, currentSubTask);
+                    } else {
+                        taskFunctions(choice2, currentEpic);
                     }
+
                     break;
                 case 5:
                     System.out.println(manager.getAllTaskHashMap());
@@ -96,61 +66,72 @@ public class Main {
                 default:
                     break;
             }
-            inputGeneralMenu = Menu.generalMenu();
+            inputGeneralMenu = Service.generalMenu();
         }
 
     }
 
+    //--ВЫБОР ЗАДАЧИ ИЗ СПИСКА ПО ID
+    public static AbstractTask choiceTask(String typeTask, Epic currentEpic) {
+
+        if (typeTask.equalsIgnoreCase("task")) {
+            System.out.println(manager.getAllTaskHashMap());
+            System.out.println("Введите id задачи Task");
+            int idTask = Service.SC_int.nextInt();
+            return manager.getTaskById(idTask);
+        }
+        if (typeTask.equalsIgnoreCase("epic")) {
+            System.out.println(manager.getAllEpicHashMap());
+            System.out.println("Введите id задачи Epic");
+            int idEpic = Service.SC_int.nextInt();
+            return manager.getEpicById(idEpic);
+        }
+        if (typeTask.equalsIgnoreCase("subtask")) {
+            System.out.println(currentEpic.getEpicSubTaskList());
+            System.out.println("Введите id задачи SubTask");
+            int idSubTask = Service.SC_int.nextInt();
+            return manager.getSubTaskById(idSubTask);
+        }
+        return null;
+    }
 
     //--ОПЕРАЦИИ НАД ЗАДАЧЕЙ
-    public static int options(AbstractTask task) {
-        System.out.println("1 Редактировать задачу");
-        if (task instanceof Epic) {
-            System.out.println("2 Добавить Subtask");
-            if (((Epic) task).getEpicSubTaskList().size() > 0) {
-                System.out.println("3 Редактировать Subtask");
+    public static void taskFunctions(int choice, AbstractTask task) {
+
+        switch (choice) {
+            case 1 -> {
+                Service.editTask(task);
+                if (task instanceof Task) {
+                    manager.updateTask((Task) task);
+                }
+                if (task instanceof Epic) {
+                    manager.updateEpic((Epic) task);
+                }
+                if (task instanceof SubTask) {
+                    manager.updateSubTask((SubTask) task);
+                }
+            }
+            case 2 -> {
+                task.setStatus(Status.DONE);
+                if (task instanceof SubTask) {
+                    manager.updateSubTask((SubTask) task);
+                }
+            }
+            case 3 -> {
+                if (task instanceof Task) {
+                    manager.removeTask((Task) task);
+                }
+                if (task instanceof Epic) {
+                    manager.removeEpic((Epic) task);
+                }
+                if (task instanceof SubTask) {
+                    manager.removeSubTask((SubTask) task);
+                }
+            }
+            default -> {
             }
         }
-        System.out.println("4 Выполнено");
-        System.out.println("5 Удаление задачи");
-        return Service.SC_int.nextInt();
 
-//        switch (input) {
-//            case 1:
-//                Menu.editTask(task);
-//                if (task instanceof Task) {
-//                    manager.updateTask((Task) task);
-//                }
-//                if (task instanceof Epic) {
-//                    manager.updateEpic((Epic) task);
-//                }
-//                if (task instanceof SubTask) {
-//                    manager.updateSubTask((SubTask) task);
-//                }
-//                break;
-//            case 2:
-//                if (task instanceof Epic) {
-//                    SubTask newSubTask = Menu.addSubTaskMenu((Epic) task);
-//                    manager.addSubTask(newSubTask);
-//                }
-//                break;
-//            case 3:
-//                task.setStatus(Status.DONE);
-//                break;
-//            case 4:
-//                if (task instanceof Task){
-//                    manager.removeTask((Task) task);
-//                }
-//                if (task instanceof Epic){
-//                    manager.removeEpic((Epic) task);
-//                }
-//                if (task instanceof SubTask){
-//                    manager.removeSubTask((SubTask) task);
-//                }
-//                break;
-//            default:
-//                break;
-//        }
     }
 
 }

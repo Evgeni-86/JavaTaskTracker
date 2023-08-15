@@ -46,12 +46,14 @@ public abstract class AbstractTask {
     }
     //----------------------------------------------------------
 
+
     @Override
     public String toString() {
-        return  "id=" + id +
+        return "{" +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", status=" + status +
-                ", descriptions='" + description + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

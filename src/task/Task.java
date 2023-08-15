@@ -6,5 +6,4 @@ public class Task extends AbstractTask {
         super(name, status, descriptions);
     }
 
-
 }

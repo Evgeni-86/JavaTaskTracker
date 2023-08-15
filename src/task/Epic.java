@@ -12,21 +12,11 @@ public class Epic extends AbstractTask {
     }
 
     //----------------------------------------
-    public SubTask addSubTaskInEpic(SubTask subTask) {
-        epicSubTaskList.add(subTask);
-        return subTask;
-    }
-
     public ArrayList<SubTask> getEpicSubTaskList() {
         return epicSubTaskList;
     }
 
     public Status updateStatus() {
-        if (epicSubTaskList.size() == 0){
-            this.status = Status.NEW;
-            return this.status;
-        }
-
         HashSet<Status> statuses = new HashSet<>();
         for (SubTask subTask : epicSubTaskList) {
             statuses.add(subTask.getStatus());
@@ -38,6 +28,8 @@ public class Epic extends AbstractTask {
             this.status = Status.NEW;
         } else if (statuses.contains((Status.DONE))) {
             this.status = Status.DONE;
+        } else {
+            this.status = Status.NEW;
         }
         return this.status;
     }

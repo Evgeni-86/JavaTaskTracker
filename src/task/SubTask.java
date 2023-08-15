@@ -1,20 +1,20 @@
 package task;
 
 public class SubTask extends AbstractTask {
-    private Epic epic;
+    private int epicId;
 
-    public SubTask(Epic epic, String name, Status status, String descriptions) {
+    public SubTask(int epicId, String name, Status status, String descriptions) {
         super(name, status, descriptions);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
-    public Epic getEpic() {
-        return this.epic;
+    public int getEpic() {
+        return this.epicId;
     }
 
     @Override
     public String toString() {
         return super.toString() +
-                ", epicId=" + epic.getId();
+                ", epicId=" + epicId;
     }
 }
