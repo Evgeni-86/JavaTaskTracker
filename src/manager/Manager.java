@@ -1,13 +1,11 @@
 package manager;
 
-import task.AbstractTask;
 import task.Epic;
 import task.SubTask;
 import task.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class Manager {
@@ -113,24 +111,24 @@ public class Manager {
         }
         subTaskHashMap.put(subTask.getId(), subTask);
         Epic epicThisSubTask = epicHashMap.get(subTask.getEpic());
-        epicThisSubTask.getEpicSubTaskList().//????
+        epicThisSubTask.getEpicSubTaskList().remove(subTask);//УДАЛИТЬ СТАРУЮ ПОДЗАДАЧУ
+        epicThisSubTask.getEpicSubTaskList().add(subTask);//ДОБАВИТЬ ОБНОВЛЕННУЮ
         epicThisSubTask.updateStatus();
         return true;
     }
 
     //--УДАЛЕНИЕ ПО ИДЕНТИФИКАТОРУ---------------
     public Task removeTask(Task task) {
-        if (task == null || !taskHashMap.containsKey(task.getId())){
+        if (task == null || !taskHashMap.containsKey(task.getId())) {
             return null;
         }
         return taskHashMap.remove(task.getId());
     }
 
     public Epic removeEpic(Epic epic) {
-        if (epic == null || !epicHashMap.containsKey(epic.getId())){
+        if (epic == null || !epicHashMap.containsKey(epic.getId())) {
             return null;
         }
-
         for (SubTask subtask : epic.getEpicSubTaskList()) {
             subTaskHashMap.remove(subtask.getId());
         }
@@ -138,7 +136,10 @@ public class Manager {
     }
 
     public SubTask removeSubTask(SubTask subTask) {
-        Epic epicThisSubTask = subTask.getEpic();
+        if (subTask == null || !subTaskHashMap.containsKey(subTask.getId()) || !epicHashMap.containsKey(subTask.getEpic())) {
+            return null;
+        }
+        Epic epicThisSubTask = epicHashMap.get(subTask.getEpic());
         epicThisSubTask.getEpicSubTaskList().remove(subTask);
         epicThisSubTask.updateStatus();
         return subTaskHashMap.remove(subTask.getId());

@@ -1,5 +1,7 @@
 package task;
 
+import java.util.Objects;
+
 public abstract class AbstractTask {
 
     protected int id;
@@ -46,6 +48,12 @@ public abstract class AbstractTask {
     }
     //----------------------------------------------------------
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractTask that)) return false;
+        return id == that.id;
+    }
 
     @Override
     public String toString() {

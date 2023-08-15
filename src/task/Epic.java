@@ -22,15 +22,12 @@ public class Epic extends AbstractTask {
             statuses.add(subTask.getStatus());
         }
 
-        if (statuses.contains(Status.NEW) && statuses.contains(Status.DONE)) {
+        if (statuses.size() == 2) {
             this.status = Status.IN_PROGRESS;
-        } else if (statuses.contains(Status.NEW)) {
-            this.status = Status.NEW;
-        } else if (statuses.contains((Status.DONE))) {
-            this.status = Status.DONE;
         } else {
-            this.status = Status.NEW;
+            this.status = statuses.iterator().next();
         }
+
         return this.status;
     }
 }
