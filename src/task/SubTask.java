@@ -1,14 +1,14 @@
 package task;
 
 public class SubTask extends AbstractTask {
-    private final int epicId;
+    private final long epicId;
 
-    public SubTask(int epicId, String name, Status status, String descriptions) {
+    public SubTask(long epicId, String name, Status status, String descriptions) {
         super(name, status, descriptions);
         this.epicId = epicId;
     }
 
-    public int getEpic() {
+    public long getEpicId() {
         return this.epicId;
     }
 

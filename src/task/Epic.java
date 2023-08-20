@@ -18,14 +18,18 @@ public class Epic extends AbstractTask {
 
     public Status updateStatus() {
         HashSet<Status> statuses = new HashSet<>();
-        for (SubTask subTask : epicSubTaskList) {
-            statuses.add(subTask.getStatus());
-        }
+        epicSubTaskList.forEach((subTask) -> statuses.add(subTask.getStatus()));
+
+//        for (SubTask subTask : epicSubTaskList) {
+//            statuses.add(subTask.getStatus());
+//        }
 
         if (statuses.size() == 2) {
             this.status = Status.IN_PROGRESS;
-        } else {
+        } else if (statuses.iterator().hasNext()) {
             this.status = statuses.iterator().next();
+        } else {
+            this.status = Status.NEW;//ЕСЛИ ПУСТО
         }
 
         return this.status;

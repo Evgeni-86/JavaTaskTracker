@@ -6,9 +6,6 @@ import task.Status;
 import task.SubTask;
 import task.Task;
 
-import java.security.Key;
-import java.util.Iterator;
-import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,8 +21,11 @@ public class Main {
         manager.addEpic(epic1);
 
         SubTask subTask = new SubTask(epic1.getId(), "SubTask1", Status.NEW, "SubTaskTest1");
-        manager.addSubTask(subTask);
-        manager.removeSubTask(subTask);
+        System.out.println(manager.addSubTask(subTask));
+        subTask.setStatus(Status.DONE);
+        manager.updateSubTask(subTask);
+        System.out.println(manager.getAllEpicHashMap());
+        System.out.println(manager.removeSubTask(subTask));
 
         System.out.println(manager.getAllEpicHashMap());
         System.out.println(manager.getAllSubTaskHashMap());

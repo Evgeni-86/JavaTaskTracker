@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public abstract class AbstractTask {
 
-    protected int id;
+    protected long id;
     protected String name;
     protected Status status;
     protected String description;
@@ -15,7 +15,7 @@ public abstract class AbstractTask {
         this.description = descriptions;
     }
 //--------------------------------------------------------------------
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -31,7 +31,7 @@ public abstract class AbstractTask {
         return description;
     }
 //------------------------------------------------------------------
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
