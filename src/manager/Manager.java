@@ -24,6 +24,7 @@ public class Manager {
         taskHashMap.put(id, task);
         return id;
     }
+
     public long addEpic(Epic epic) {
         if (epic == null) {
             return -1;
@@ -33,6 +34,7 @@ public class Manager {
         epicHashMap.put(id, epic);
         return id;
     }
+
     public long addSubTask(SubTask subTask) {
         if (subTask == null || !epicHashMap.containsKey(subTask.getEpicId())) {
             return -1;
@@ -45,37 +47,47 @@ public class Manager {
         currentEpic.updateStatus();
         return id;
     }
+
     //--ПОЛУЧЕНИЕ СПИСКА ЗАДАЧ----------------
     public List<Task> getAllTaskHashMap() {
         return new ArrayList<>(taskHashMap.values());
     }
+
     public List<Epic> getAllEpicHashMap() {
         return new ArrayList<>(epicHashMap.values());
     }
+
     public List<SubTask> getAllSubTaskHashMap() {
         return new ArrayList<>(subTaskHashMap.values());
     }
+
     //--УДАЛЕНИЕ ВСЕХ ЗАДАЧ-------------------
     public void clearTaskHashMap() {
         taskHashMap.clear();
     }
+
     public void clearEpicHashMap() {
         subTaskHashMap.clear();
         epicHashMap.clear();
     }
+
     public void clearSubTaskHashMap() {
         subTaskHashMap.clear();
     }
+
     //--ПОЛУЧЕНИЕ ПО ИДЕНТИФИКАТОРУ-------------
-    public Task getTaskById(int id) {
+    public Task getTaskById(long id) {
         return taskHashMap.get(id);
     }
-    public Epic getEpicById(int id) {
+
+    public Epic getEpicById(long id) {
         return epicHashMap.get(id);
     }
-    public SubTask getSubTaskById(int id) {
+
+    public SubTask getSubTaskById(long id) {
         return subTaskHashMap.get(id);
     }
+
     //--ОБНОВЛЕНИЕ ЗАДАЧИ------------------------
     public boolean updateTask(Task task) {
         if (task == null || !taskHashMap.containsKey(task.getId())) {
@@ -89,6 +101,10 @@ public class Manager {
         if (epic == null || !epicHashMap.containsKey(epic.getId())) {
             return false;
         }
+        //----subtask из старого епика в обновленный-----
+        Epic oldEpic = getEpicById(epic.getId());
+        epic.setEpicSubTaskList(oldEpic.getEpicSubTaskList());
+        //-----------------------------------------------
         epicHashMap.put(epic.getId(), epic);
         return true;
     }
@@ -117,9 +133,10 @@ public class Manager {
         if (epic == null || !epicHashMap.containsKey(epic.getId())) {
             return null;
         }
-        for (SubTask subtask : epic.getEpicSubTaskList()) {
-            subTaskHashMap.remove(subtask.getId());
-        }
+//        for (SubTask subtask : epic.getEpicSubTaskList()) {
+//            subTaskHashMap.remove(subtask.getId());
+//        }
+        epic.getEpicSubTaskList().forEach(elem -> subTaskHashMap.remove(elem.getId()));
         return epicHashMap.remove(epic.getId());
     }
 
@@ -132,5 +149,4 @@ public class Manager {
         epicThisSubTask.updateStatus();
         return subTaskHashMap.remove(subTask.getId());
     }
-
 }

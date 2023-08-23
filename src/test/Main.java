@@ -21,11 +21,14 @@ public class Main {
         manager.addEpic(epic1);
 
         SubTask subTask = new SubTask(epic1.getId(), "SubTask1", Status.NEW, "SubTaskTest1");
+
         System.out.println(manager.addSubTask(subTask));
         subTask.setStatus(Status.DONE);
         manager.updateSubTask(subTask);
         System.out.println(manager.getAllEpicHashMap());
         System.out.println(manager.removeSubTask(subTask));
+
+        System.out.println(manager.getSubTaskById(subTask.getId()));
 
         System.out.println(manager.getAllEpicHashMap());
         System.out.println(manager.getAllSubTaskHashMap());
@@ -34,13 +37,24 @@ public class Main {
         subTask1.setId(subTask.getId());
         System.out.println(manager.updateSubTask(subTask1));
 
+        Task task3 = new Task("Task2", Status.NEW, "Task2Test");
+        task3.setId(task2.getId());
+        System.out.println(manager.updateTask(task3));
+
         System.out.println(manager.getAllEpicHashMap());
         System.out.println(manager.getAllSubTaskHashMap());
 
-        manager.removeEpic(epic1);
+//        manager.removeEpic(epic1);
 
         System.out.println(manager.getAllEpicHashMap());
         System.out.println(manager.getAllSubTaskHashMap());
+
+        System.out.println(manager.getTaskById(task1.getId()));
+        System.out.println(manager.getEpicById(epic1.getId()));
+
+        Epic epicUpdate = new Epic("Epic1", Status.NEW, "Epic1Test");
+        epicUpdate.setId(epic1.getId());
+        System.out.println(manager.updateEpic(epicUpdate));
 
 
     }
