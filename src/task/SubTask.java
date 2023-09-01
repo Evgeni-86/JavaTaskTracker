@@ -1,6 +1,7 @@
 package task;
 
 public class SubTask extends AbstractTask {
+
     private final long epicId;
 
     public SubTask(long epicId, String name, Status status, String descriptions) {
