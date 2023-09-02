@@ -27,8 +27,8 @@ public interface TaskManager {
     public boolean updateEpic(Epic epic);
     public boolean updateSubTask(SubTask subTask);
 
-    public Task removeTask(Task task);
-    public Epic removeEpic(Epic epic);
-    public SubTask removeSubTask(SubTask subTask);
+    public Task removeTask(long id);
+    public Epic removeEpic(long id);
+    public SubTask removeSubTask(long id);
     List<AbstractTask> getHistory();
 }

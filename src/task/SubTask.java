@@ -16,7 +16,12 @@ public class SubTask extends AbstractTask {
 
     @Override
     public String toString() {
-        return super.toString() +
-                ", epicId=" + epicId;
+        return "{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                ", epicId=" +  epicId +
+                '}';
     }
 }
