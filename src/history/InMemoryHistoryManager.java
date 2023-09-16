@@ -4,31 +4,31 @@ import task.AbstractTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
     private final HashMap<Long, Node> historyHashMap = new HashMap<>();
 
-    //==CustomLinkedList===============================
+    //==LINKED LIST===============================
     private Node head;
     private Node tail;
 
-    public void linkLast(AbstractTask task) {
-        Node newNodeCurrenTask = new Node(task);
-        if (head == null) {
+    public Node linkLast(AbstractTask task) {
+        Node newNodeCurrenTask = new Node(task, tail, null);
+        Node oldTail = tail;
+        tail = newNodeCurrenTask;
+        if (oldTail == null) {
             head = newNodeCurrenTask;
         } else {
-            connectElements(tail, newNodeCurrenTask);
+            oldTail.setNext(tail);
         }
-        tail = newNodeCurrenTask;
-        historyHashMap.put(task.getId(), newNodeCurrenTask);
+        return newNodeCurrenTask;
     }
 
-    public ArrayList<AbstractTask> getTasks() {
+    public List<AbstractTask> getTasks() {
         ArrayList<AbstractTask> historyList = new ArrayList<>();
-        for (Node tempHead = head; tempHead != null ; tempHead = tempHead.getNext()) {
+        for (Node tempHead = head; tempHead != null; tempHead = tempHead.getNext()) {
             historyList.add(tempHead.getTask());
         }
         return historyList;
@@ -43,11 +43,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (elementTwo != null) {
             elementTwo.setPrev(elementOne);
+        } else {
+            tail = elementOne;
         }
     }
 
-    private void removeNode(Node node){
-        if (node != null){
+    private void removeNode(Node node) {
+        if (node != null) {
             connectElements(node.getPrev(), node.getNext());
         }
     }
@@ -55,8 +57,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(AbstractTask task) {
-        removeNode(historyHashMap.remove(task.getId()));
-        linkLast(task);
+        remove(task.getId());
+        historyHashMap.put(task.getId(), linkLast(task));
     }
 
     @Override
@@ -76,8 +78,10 @@ class Node {
     private Node prev;
     private Node next;
 
-    public Node(AbstractTask task) {
+    public Node(AbstractTask task, Node prev, Node next) {
         this.task = task;
+        this.prev = prev;
+        this.next = next;
     }
 
     public AbstractTask getTask() {

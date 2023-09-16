@@ -2,21 +2,22 @@ package task;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class Epic extends AbstractTask {
 
-    private ArrayList<SubTask> epicSubTaskList = new ArrayList<>();
+    private List<SubTask> epicSubTaskList = new ArrayList<>();
 
     public Epic(String name, Status status, String descriptions) {
         super(name, status, descriptions);
     }
 
     //----------------------------------------
-    public ArrayList<SubTask> getEpicSubTaskList() {
+    public List<SubTask> getEpicSubTaskList() {
         return epicSubTaskList;
     }
 
-    public void setEpicSubTaskList(ArrayList<SubTask> epicSubTaskList) {
+    public void setEpicSubTaskList(List<SubTask> epicSubTaskList) {
         this.epicSubTaskList = epicSubTaskList;
     }
 
