@@ -1,5 +1,7 @@
 package task;
 
+import service.Status;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +12,11 @@ public class Epic extends AbstractTask {
 
     public Epic(String name, Status status, String descriptions) {
         super(name, status, descriptions);
+    }
+
+    public Epic(String name, Status status, String descriptions, long id) {
+        this(name, status, descriptions);
+        this.id = id;
     }
 
     //----------------------------------------

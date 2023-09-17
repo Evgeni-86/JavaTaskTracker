@@ -86,15 +86,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpicHashMap() {
-        clearSubTaskHashMap();
+        subTaskHashMap.keySet().forEach(elem -> historyManager.remove(elem));
         epicHashMap.keySet().forEach(elem -> historyManager.remove(elem));
+        subTaskHashMap.clear();
         epicHashMap.clear();
     }
 
     @Override
     public void clearSubTaskHashMap() {
         subTaskHashMap.keySet().forEach(elem -> historyManager.remove(elem));
-        epicHashMap.values().forEach(elem ->{
+        epicHashMap.values().forEach(elem -> {
             elem.getEpicSubTaskList().clear();
             elem.updateStatus();
         });

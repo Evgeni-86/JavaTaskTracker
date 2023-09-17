@@ -1,6 +1,6 @@
 id,type,name,status,description,epic
 1,TASK,Task 1,NEW,Task 1 test
-2,TASK,Task 2,NEW,Task 2 test
+2,TASK,null,NEW,null
 3,TASK,Task 3,NEW,Task 3 test
 5,SUBTASK,SubTask1 for Epic 1,NEW,SubTask1 for Epic 1 test,4
 6,SUBTASK,SubTask2 for Epic 1,NEW,SubTask2 for Epic 1 test,4

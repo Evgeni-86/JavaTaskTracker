@@ -1,6 +1,6 @@
 package task;
 
-import java.util.Objects;
+import service.Status;
 
 public abstract class AbstractTask {
 
@@ -14,7 +14,8 @@ public abstract class AbstractTask {
         this.status = status;
         this.description = descriptions;
     }
-//--------------------------------------------------------------------
+
+    //--------------------------------------------------------------------
     public long getId() {
         return id;
     }

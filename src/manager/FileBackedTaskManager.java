@@ -1,17 +1,17 @@
 package manager;
 
 
+import exeptions.ManagerLoadException;
 import exeptions.ManagerSaveException;
 import history.HistoryManager;
+import service.Status;
 import service.TasksType;
 import task.*;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -151,88 +151,52 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
     //--------SAVE and LOAD--------------------------------------------------------
-    public void loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
+
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-
-//            boolean readTask = true;//ЧТО ЧИТАЕМ В ДАННЫЙ МОМЕНТ
 
             bufferedReader.readLine();
             String currentReadingLine;
             while (bufferedReader.ready() && !(currentReadingLine = bufferedReader.readLine()).isEmpty()) {
 
-                AbstractTask currentTask = taskFromString(currentReadingLine);
+                AbstractTask currentTask = fileBackedTaskManager.taskFromString(currentReadingLine);
                 if (currentTask instanceof Task) {
-                    this.taskHashMap.put(currentTask.getId(), (Task) currentTask);
+                    fileBackedTaskManager.taskHashMap.put(currentTask.getId(), (Task) currentTask);
 
                 } else if (currentTask instanceof SubTask) {
-                    this.subTaskHashMap.put(currentTask.getId(), (SubTask) currentTask);
+                    fileBackedTaskManager.subTaskHashMap.put(currentTask.getId(), (SubTask) currentTask);
 
-                } else {
+                } else if (currentTask instanceof Epic) {
                     Epic epic = (Epic) currentTask;
-                    this.subTaskHashMap.values().stream().filter(el -> el.getEpicId() == epic.getId()).forEach(el -> epic.getEpicSubTaskList().add(el));
-                    this.epicHashMap.put(epic.getId(), epic);
+                    fileBackedTaskManager.subTaskHashMap.values().stream().filter(el -> el.getEpicId() == epic.getId()).forEach(el -> epic.getEpicSubTaskList().add(el));
+                    fileBackedTaskManager.epicHashMap.put(epic.getId(), epic);
                 }
+
             }
 
             if (bufferedReader.ready()) {
 
                 for (long id : historyFromString(bufferedReader.readLine())) {
-                    if (this.taskHashMap.containsKey(id)) {
-                        this.historyManager.add(this.taskHashMap.get(id));
+                    if (fileBackedTaskManager.taskHashMap.containsKey(id)) {
+                        fileBackedTaskManager.historyManager.add(fileBackedTaskManager.taskHashMap.get(id));
 
-                    } else if (this.epicHashMap.containsKey(id)) {
-                        this.historyManager.add(this.epicHashMap.get(id));
+                    } else if (fileBackedTaskManager.epicHashMap.containsKey(id)) {
+                        fileBackedTaskManager.historyManager.add(fileBackedTaskManager.epicHashMap.get(id));
 
-                    } else if (this.subTaskHashMap.containsKey(id)) {
-                        this.historyManager.add(this.subTaskHashMap.get(id));
+                    } else if (fileBackedTaskManager.subTaskHashMap.containsKey(id)) {
+                        fileBackedTaskManager.historyManager.add(fileBackedTaskManager.subTaskHashMap.get(id));
                     }
                 }
             }
 
-//            while (bufferedReader.ready()) {
-//                String currentReadingLine = bufferedReader.readLine();
-//                if (!currentReadingLine.isEmpty() && Character.isDigit(currentReadingLine.charAt(0))) {
-//                    if (readTask) {
-//                        //TODO т.к. метод taskFromString вернет AbstractTask то этот код сдесь или перенести
-//                        AbstractTask currentTask = taskFromString(currentReadingLine);
-//                        if (currentTask instanceof Task) {
-//                            this.taskHashMap.put(currentTask.getId(), (Task) currentTask);
-//
-//                        } else if (currentTask instanceof SubTask) {
-//                            this.subTaskHashMap.put(currentTask.getId(), (SubTask) currentTask);
-//
-//                        } else {
-//                            Epic epic = (Epic) currentTask;
-//                            this.subTaskHashMap.values().stream().filter(el -> el.getEpicId() == epic.getId()).forEach(el -> epic.getEpicSubTaskList().add(el));
-//                            this.epicHashMap.put(epic.getId(), epic);
-//                        }
-//                    } else {
-//                        //TODO т.к. МЕТОД historyFromString по заданию static тогда этот код здесь или перенести
-//
-//                        for (long id : historyFromString(currentReadingLine)) {
-//                            if (this.taskHashMap.containsKey(id)) {
-//                                this.historyManager.add(this.taskHashMap.get(id));
-//
-//                            } else if (this.epicHashMap.containsKey(id)) {
-//                                this.historyManager.add(this.epicHashMap.get(id));
-//
-//                            } else if (this.subTaskHashMap.containsKey(id)) {
-//                                this.historyManager.add(this.subTaskHashMap.get(id));
-//                            }
-//                        }
-//                    }
-//                }
-//                if (currentReadingLine.isEmpty()) {
-//                    readTask = false;
-//                }
-//            }
-
         } catch (IOException e) {
-            throw new ManagerSaveException("load manager error");
+            throw new ManagerLoadException("load manager error");
         }
-    }
 
+        return fileBackedTaskManager;
+    }
 
     private void save() {
 
@@ -265,10 +229,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else if (task instanceof Epic) {
             return task.getId() + "," + TasksType.EPIC + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
 
-        } else {
+        } else if (task instanceof SubTask) {
             return task.getId() + "," + TasksType.SUBTASK + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription()
                     + "," + ((SubTask) task).getEpicId();
         }
+        throw new ManagerSaveException("невозможно перевести обьект задачи в строку");
     }
 
     private static String historyToString(HistoryManager historyManager) {
@@ -288,32 +253,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private AbstractTask taskFromString(String value) {
 
         String[] valueStr = value.split(",");
-        /*
-         * valueStr[0] - ID
-         * valueStr[1] - type (TaskType)
-         * valueStr[2] - name
-         * valueStr[3] - status
-         * valueStr[4] - description
-         * valueStr[5] - epicID
-         */
+
+        long id = Long.parseLong(valueStr[0]);
+        String name = valueStr[2];
+        Status status = Status.valueOf(valueStr[3]);
+        String description = valueStr[4];
+
+        AbstractTask newTask;
         switch (valueStr[1]) {
-            case "SUBTASK" -> {
+            case "SUBTASK":
                 long epicId = Long.parseLong(valueStr[5]);
-                SubTask subTask = new SubTask(epicId, valueStr[2], Status.valueOf(valueStr[3]), valueStr[4]);
-                subTask.setId(Long.parseLong(valueStr[0]));
-                return subTask;
-            }
-            case "TASK" -> {
-                Task task = new Task(valueStr[2], Status.valueOf(valueStr[3]), valueStr[4]);
-                task.setId(Long.parseLong(valueStr[0]));
-                return task;
-            }
-            default -> {
-                Epic epic = new Epic(valueStr[2], Status.valueOf(valueStr[3]), valueStr[4]);
-                epic.setId(Long.parseLong(valueStr[0]));
-                return epic;
-            }
+                newTask = new SubTask(epicId, name, status, description, id);
+                break;
+            case "TASK":
+                newTask = new Task(name, status, description, id);
+                break;
+            case "EPIC":
+                newTask = new Epic(name, status, description, id);
+                break;
+            default:
+                throw new ManagerLoadException("невозможно получить обьект задачи из строки");
         }
+        return newTask;
     }
 
     private static List<Long> historyFromString(String value) {
