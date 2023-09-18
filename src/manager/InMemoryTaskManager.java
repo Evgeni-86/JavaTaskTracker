@@ -2,10 +2,7 @@ package manager;
 
 import history.HistoryManager;
 import service.Managers;
-import task.AbstractTask;
-import task.Epic;
-import task.SubTask;
-import task.Task;
+import task.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
