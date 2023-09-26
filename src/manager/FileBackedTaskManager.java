@@ -177,16 +177,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (bufferedReader.ready()) {
 
                 for (long id : historyFromString(bufferedReader.readLine())) {
-                    if (fileBackedTaskManager.taskHashMap.containsKey(id)) {
                         fileBackedTaskManager.historyManager.add(fileBackedTaskManager.taskHashMap.get(id));
-
-                    } else if (fileBackedTaskManager.epicHashMap.containsKey(id)) {
                         fileBackedTaskManager.historyManager.add(fileBackedTaskManager.epicHashMap.get(id));
-
-                    } else if (fileBackedTaskManager.subTaskHashMap.containsKey(id)) {
                         fileBackedTaskManager.historyManager.add(fileBackedTaskManager.subTaskHashMap.get(id));
-                    }
                 }
+
             }
 
         } catch (IOException e) {

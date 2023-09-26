@@ -57,6 +57,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(AbstractTask task) {
+        if (task == null){//используется в методе loadFromFile FileBackedTaskManager
+            return;
+        }
         remove(task.getId());
         historyHashMap.put(task.getId(), linkLast(task));
     }
